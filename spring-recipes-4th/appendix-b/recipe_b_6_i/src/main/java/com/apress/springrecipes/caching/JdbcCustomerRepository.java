@@ -2,6 +2,7 @@ package com.apress.springrecipes.caching;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -43,10 +44,10 @@ public class JdbcCustomerRepository implements CustomerRepository {
     @CachePut(value="customers", key = "#result.id")
     public Customer create(String name) {
 
-        final String sql = "INSERT INTO customer (name) VALUES (?);";
+        final String sql = "INSERT INTO customer (name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(con -> {
-            PreparedStatement ps = con.prepareStatement(sql);
+            PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, name);
             return ps;
         }, keyHolder);
